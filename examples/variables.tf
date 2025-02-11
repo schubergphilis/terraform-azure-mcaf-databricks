@@ -151,9 +151,3 @@ variable "databricks_host" {
   type        = string
   default     = ""
 }
-
-variable "databricks_app_object_id" {
-  description = "The Object ID of the Databricks application for key vault access."
-  type        = string
-  default     = ""
-}

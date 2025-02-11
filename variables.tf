@@ -91,12 +91,6 @@ variable "databricks_host" {
   default     = ""
 }
 
-variable "databricks_app_object_id" {
-  description = "The Object ID of the Databricks application for key vault access."
-  type        = string
-  default     = ""
-}
-
 variable "metastore_id" {
   description = "The ID of the Databricks metastore to assign to the workspace."
   type        = string
