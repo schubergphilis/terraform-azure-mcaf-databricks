@@ -8,12 +8,17 @@ output "databricks_workspace_url" {
   value       = azurerm_databricks_workspace.this.workspace_url
 }
 
-output "managed_identity_id" {
-  description = "The ID of the managed identity if created"
-  value       = try(azurerm_user_assigned_identity.this[0].id, null)
+output "databricks_metastore_assignment_id" {
+  description = "The ID of the Databricks metastore assignment"
+  value       = databricks_metastore_assignment.this.id
 }
 
-output "managed_identity_principal_id" {
-  description = "The principal ID of the managed identity if created"
-  value       = try(azurerm_user_assigned_identity.this[0].principal_id, null)
+output "key_vault_access_policy_databricks_id" {
+  description = "The ID of the Key Vault access policy for Databricks"
+  value       = azurerm_key_vault_access_policy.databricks.id
+}
+
+output "key_vault_access_policy_managed_id" {
+  description = "The ID of the Key Vault access policy for managed identity"
+  value       = azurerm_key_vault_access_policy.managed.id
 }

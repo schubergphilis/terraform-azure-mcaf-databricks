@@ -1,70 +1,53 @@
-terraform {
-  required_version = ">= 1.0"
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = ">= 3.0"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {}
-}
-
 module "network" {
-  source  = "github.com/schubergphilis/terraform-azure-mcaf-network"
-  version = "1.0.0"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-network.git?ref=main"
 
   vnet = {
-    name                = "databricks-vnet"
+    name                = var.vnet_name
     resource_group_name = var.resource_group_name
     location            = var.location
-    address_space       = ["10.1.0.0/16"]
+    address_space       = var.vnet_address_space
   }
 
-  subnets = {
-    private_subnet = {
-      name           = "databricks-private-subnet"
-      address_prefix = "10.1.1.0/24"
-      service_endpoints = ["Microsoft.Sql", "Microsoft.Storage"]
-    }
-    public_subnet = {
-      name           = "databricks-public-subnet"
-      address_prefix = "10.1.2.0/24"
-      service_endpoints = []
-    }
-  }
+  subnets = var.subnets
+  tags    = var.tags
+}
+
+module "keyvault" {
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-core?ref=main"
+
+  name                = var.keyvault_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  sku                 = "standard"
+  tenant_id           = var.tenant_id
+  access_policies     = var.keyvault_access_policies
+  tags                = var.tags
 }
 
 module "databricks" {
-  source  = "github.com/schubergphilis/terraform-azure-mcaf-databricks"
-  version = "0.0.1"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-databricks?ref=develop"
 
   workspace = {
-    name                = "my-databricks-workspace"
+    name                = var.databricks_workspace_name
     resource_group_name = var.resource_group_name
     location            = var.location
-    sku                 = "premium"
-    enable_private_link = true
+    sku                 = var.databricks_sku
+    enable_private_link = var.enable_private_link
   }
 
   network = {
-    vnet_id             = module.network.vnet_id
-    private_subnet_id   = module.network.subnets["private_subnet"].id
-    public_subnet_id    = module.network.subnets["public_subnet"].id
-    nsg_id              = module.network.nsg_id
-    private_endpoint_ids = module.network.private_endpoint_ids
+    vnet_id             = module.network.id
+    private_subnet_name = module.network.subnets["private_subnet"].name
+    public_subnet_name  = module.network.subnets["public_subnet"].name
+    private_subnet_nsg_id = module.network.all_network_security_groups["private_subnet"].id
+    public_subnet_nsg_id  = module.network.all_network_security_groups["public_subnet"].id
   }
 
-  managed_identity = {
-    enabled = true
-    name    = "my-databricks-identity"
-  }
-}
-
-output "databricks_workspace_url" {
-  description = "The URL of the Databricks workspace"
-  value       = module.databricks.databricks_workspace_url
+  managed_disk_key_id     = module.keyvault.keys["managed-disk"].id
+  managed_services_key_id = module.keyvault.keys["managed-services"].id
+  key_vault_id            = module.keyvault.id
+  tenant_id               = var.tenant_id
+  databricks_app_object_id = var.databricks_app_object_id
+  metastore_id            = var.metastore_id
+  tags                    = var.tags
 }
