@@ -90,19 +90,3 @@ variable "databricks_token" {
   type        = string
   sensitive   = true
 }
-
-variable "tenant_id" {
-  description = "The Azure tenant ID"
-  type        = string
-}
-
-variable "client_id" {
-  description = "The Azure client ID for authentication"
-  type        = string
-}
-
-variable "client_secret" {
-  description = "The Azure client secret for authentication"
-  type        = string
-  sensitive   = true
-}
