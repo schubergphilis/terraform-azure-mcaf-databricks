@@ -48,23 +48,40 @@ module "keyvault" {
 }
 
 module "databricks" {
-  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-databricks?ref=develop"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-databricks.git?ref=develop"
 
-  prefix                   = var.prefix
-  vnet_id                  = module.network.id
-  private_subnet_name      = module.network.subnets["private_subnet"].name
-  public_subnet_name       = module.network.subnets["public_subnet"].name
-  private_subnet_nsg_id    = module.network.all_network_security_groups["private_subnet"].id
-  public_subnet_nsg_id     = module.network.all_network_security_groups["public_subnet"].id
-  resource_group_name      = var.resource_group_name
-  location                 = var.location
-  databricks_host          = var.databricks_host
-  databricks_token         = var.databricks_token
-  key_vault_id             = module.keyvault.key_vault_id
-  managed_disk_key_id      = module.keyvault.cmkrsa_id
-  managed_services_key_id  = module.keyvault.cmkrsa_resource_versionless_id
-  tenant_id                = var.tenant_id
-  databricks_app_object_id = var.databricks_app_object_id
-  metastore_id             = var.metastore_id
-  tags                     = var.tags
+  prefix                  = var.prefix
+  vnet_id                 = module.network.vnet_id
+  private_subnet_name     = module.network.subnets["private_subnet"].name
+  public_subnet_name      = module.network.subnets["public_subnet"].name
+  private_subnet_nsg_id   = module.network.all_network_security_groups["private_subnet"].id
+  public_subnet_nsg_id    = module.network.all_network_security_groups["public_subnet"].id
+  resource_group_name     = var.resource_group_name
+  location                = var.location
+  key_vault_id            = module.keyvault.key_vault_id
+  managed_disk_key_id     = module.keyvault.cmkrsa_id
+  managed_services_key_id = module.keyvault.cmkrsa_resource_versionless_id
+  managed_identity_id     = var.managed_identity_id
+  tenant_id               = var.tenant_id
+  subscription_id         = var.subscription_id
+  databricks_host         = module.databricks.databricks_workspace_url
+  databricks_app_object_id = module.databricks.databricks_app_object_id
+  metastore_id            = var.metastore_id
+  tags                    = var.tags
+}
+
+# Fetch Databricks Workspace details dynamically
+data "azurerm_databricks_workspace" "this" {
+  name                = module.databricks.databricks_workspace_name
+  resource_group_name = var.resource_group_name
+}
+
+output "databricks_workspace_url" {
+  value       = data.azurerm_databricks_workspace.this.workspace_url
+  description = "The URL of the Databricks workspace."
+}
+
+output "databricks_app_object_id" {
+  value       = data.azurerm_databricks_workspace.this.managed_resource_group_id
+  description = "The Object ID of the Databricks Managed Identity."
 }

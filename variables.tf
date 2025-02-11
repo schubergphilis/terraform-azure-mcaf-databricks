@@ -4,75 +4,107 @@ variable "prefix" {
 }
 
 variable "resource_group_name" {
+  description = "The Azure resource group where resources will be created."
   type        = string
-  description = "The name of the resource group where Databricks will be deployed."
 }
 
 variable "location" {
+  description = "The Azure region where resources will be deployed."
   type        = string
-  description = "The Azure region where Databricks will be deployed."
+}
+
+variable "databricks_workspace_name" {
+  description = "The name of the Databricks workspace."
+  type        = string
 }
 
 variable "databricks_sku" {
+  description = "The SKU tier for Databricks (standard, premium)."
   type        = string
-  description = "The SKU of the Databricks workspace."
-  default     = "premium"
-}
-
-variable "vnet_id" {
-  type        = string
-  description = "The ID of the Virtual Network where Databricks will be deployed."
-}
-
-variable "private_subnet_name" {
-  type        = string
-  description = "The name of the private subnet for Databricks."
-}
-
-variable "public_subnet_name" {
-  type        = string
-  description = "The name of the public subnet for Databricks."
-}
-
-variable "private_subnet_nsg_id" {
-  type        = string
-  description = "The NSG ID for the private subnet."
-}
-
-variable "public_subnet_nsg_id" {
-  type        = string
-  description = "The NSG ID for the public subnet."
-}
-
-variable "key_vault_id" {
-  type        = string
-  description = "The ID of the Azure Key Vault."
-}
-
-variable "managed_disk_key_id" {
-  type        = string
-  description = "The ID of the CMK for managed disks."
-}
-
-variable "managed_services_key_id" {
-  type        = string
-  description = "The ID of the CMK for managed services."
-}
-
-variable "tags" {
-  type        = map(string)
-  description = "A map of tags to assign to the resources."
-  default     = {}
-}
-
-variable "metastore_id" {
-  type        = string
-  description = "The ID of the Databricks metastore to assign to the workspace."
-  default     = ""
 }
 
 variable "enable_private_link" {
+  description = "Whether to enable private link for Databricks."
   type        = bool
-  description = "Enable private link for Databricks."
-  default     = true
+  default     = false
+}
+
+variable "vnet_id" {
+  description = "The ID of the Virtual Network where Databricks will be deployed."
+  type        = string
+}
+
+variable "private_subnet_name" {
+  description = "The name of the private subnet for Databricks."
+  type        = string
+}
+
+variable "public_subnet_name" {
+  description = "The name of the public subnet for Databricks."
+  type        = string
+}
+
+variable "private_subnet_nsg_id" {
+  description = "The ID of the Network Security Group (NSG) associated with the private subnet."
+  type        = string
+}
+
+variable "public_subnet_nsg_id" {
+  description = "The ID of the Network Security Group (NSG) associated with the public subnet."
+  type        = string
+}
+
+variable "key_vault_id" {
+  description = "The ID of the Azure Key Vault."
+  type        = string
+}
+
+variable "managed_disk_key_id" {
+  description = "The Key Vault key ID used to encrypt Databricks-managed disks."
+  type        = string
+}
+
+variable "managed_services_key_id" {
+  description = "The Key Vault key ID used to encrypt Databricks-managed services."
+  type        = string
+}
+
+variable "managed_identity_id" {
+  description = "The ID of the user-assigned managed identity for Databricks (if applicable)."
+  type        = string
+  default     = ""
+}
+
+variable "tenant_id" {
+  description = "The Azure tenant ID."
+  type        = string
+}
+
+variable "subscription_id" {
+  description = "The Azure subscription ID."
+  type        = string
+}
+
+variable "databricks_host" {
+  description = "The Databricks workspace host URL."
+  type        = string
+  default     = ""
+}
+
+variable "databricks_app_object_id" {
+  description = "The Object ID of the Databricks application for key vault access."
+  type        = string
+  default     = ""
+}
+
+variable "metastore_id" {
+  description = "The ID of the Databricks metastore to assign to the workspace."
+  type        = string
+  default     = ""
+}
+
+variable "tags" {
+  description = "A map of tags to apply to all resources."
+  type        = map(string)
+  default     = {}
 }

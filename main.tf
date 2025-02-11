@@ -38,10 +38,23 @@ resource "azurerm_databricks_workspace_root_dbfs_customer_managed_key" "this" {
   key_vault_key_id = var.managed_disk_key_id
 }
 
+# Fetch Databricks Workspace details dynamically
+data "azurerm_databricks_workspace" "this" {
+  name                = azurerm_databricks_workspace.this.name
+  resource_group_name = var.resource_group_name
+}
+
+# Fetch Databricks Managed Identity (if applicable)
+data "azurerm_user_assigned_identity" "databricks_identity" {
+  count               = var.managed_identity_id != "" ? 1 : 0
+  name                = basename(var.managed_identity_id)
+  resource_group_name = var.resource_group_name
+}
+
 resource "azurerm_key_vault_access_policy" "databricks" {
   key_vault_id = var.key_vault_id
-  tenant_id    = azurerm_databricks_workspace.this.identity.0.tenant_id
-  object_id    = azurerm_databricks_workspace.this.identity.0.principal_id
+  tenant_id    = var.tenant_id
+  object_id    = var.managed_identity_id != "" ? var.managed_identity_id : data.azurerm_user_assigned_identity.databricks_identity[0].principal_id
 
   key_permissions = [
     "Get",

@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  description = "The Azure resource group where resources will be created"
+  description = "The Azure resource group where resources will be created."
   type        = string
 }
 
@@ -9,22 +9,22 @@ variable "prefix" {
 }
 
 variable "location" {
-  description = "The Azure region where resources will be deployed"
+  description = "The Azure region where resources will be deployed."
   type        = string
 }
 
 variable "vnet_name" {
-  description = "The name of the Virtual Network"
+  description = "The name of the Virtual Network."
   type        = string
 }
 
 variable "vnet_address_space" {
-  description = "The address space for the Virtual Network"
+  description = "The address space for the Virtual Network."
   type        = list(string)
 }
 
 variable "subnets" {
-  description = "A map of subnet configurations"
+  description = "A map of subnet configurations."
   type = map(object({
     name              = string
     address_prefix    = string
@@ -52,79 +52,53 @@ variable "keyvault_access_policies" {
   }))
   description = "List of access policies for the Key Vault."
 }
+
 variable "databricks_workspace_name" {
-  description = "The name of the Databricks workspace"
+  description = "The name of the Databricks workspace."
   type        = string
 }
 
 variable "databricks_sku" {
-  description = "The SKU tier for Databricks (standard, premium)"
+  description = "The SKU tier for Databricks (standard, premium)."
   type        = string
 }
 
 variable "enable_private_link" {
-  description = "Whether to enable private link for Databricks"
+  description = "Whether to enable private link for Databricks."
   type        = bool
   default     = false
 }
 
 variable "tenant_id" {
-  description = "The Azure tenant ID"
-  type        = string
-}
-
-variable "databricks_app_object_id" {
-  description = "The Object ID of the Databricks application for key vault access"
+  description = "The Azure tenant ID."
   type        = string
 }
 
 variable "metastore_id" {
-  description = "The ID of the Databricks metastore to assign to the workspace"
+  description = "The ID of the Databricks metastore to assign to the workspace."
   type        = string
+  default     = ""
 }
 
 variable "tags" {
-  description = "A map of tags to apply to all resources"
+  description = "A map of tags to apply to all resources."
   type        = map(string)
   default     = {}
 }
 
 variable "managed_identity_id" {
-  description = "The ID of the user-assigned managed identity to use for authentication"
+  description = "The ID of the user-assigned managed identity to use for authentication."
   type        = string
 }
 
 variable "subscription_id" {
-  description = "The Azure subscription ID"
+  description = "The Azure subscription ID."
   type        = string
-}
-
-variable "databricks_host" {
-  description = "The Databricks workspace host URL"
-  type        = string
-}
-
-variable "databricks_token" {
-  description = "The authentication token for Databricks API access"
-  type        = string
-  sensitive   = true
 }
 
 variable "storage_account_name" {
   description = "The name of the storage account."
   type        = string
-}
-
-variable "storage_account_tier" {
-  description = "The performance tier of the storage account."
-  type        = string
-  default     = "Standard"
-}
-
-variable "storage_account_replication_type" {
-  description = "The replication type of the storage account."
-  type        = string
-  default     = "LRS"
 }
 
 variable "storage_account_id" {
@@ -160,4 +134,26 @@ variable "public_subnet_name" {
 variable "vnet_id" {
   description = "The ID of the Virtual Network (VNet)."
   type        = string
+}
+
+variable "managed_disk_key_id" {
+  description = "The ID of the CMK for managed disks."
+  type        = string
+}
+
+variable "managed_services_key_id" {
+  description = "The ID of the CMK for managed services."
+  type        = string
+}
+
+variable "databricks_host" {
+  description = "The Databricks workspace host URL."
+  type        = string
+  default     = ""
+}
+
+variable "databricks_app_object_id" {
+  description = "The Object ID of the Databricks application for key vault access."
+  type        = string
+  default     = ""
 }

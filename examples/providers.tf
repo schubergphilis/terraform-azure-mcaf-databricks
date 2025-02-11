@@ -20,6 +20,7 @@ provider "azurerm" {
 }
 
 provider "databricks" {
-  host  = var.databricks_host
-  token = var.databricks_token
+  alias     = "workspace"
+  host      = var.databricks_host
+  auth_type = "azure-cli"
 }
