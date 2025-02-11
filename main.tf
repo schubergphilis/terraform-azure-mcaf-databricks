@@ -40,8 +40,8 @@ resource "azurerm_databricks_workspace_root_dbfs_customer_managed_key" "this" {
 
 resource "azurerm_key_vault_access_policy" "databricks" {
   key_vault_id = var.key_vault_id
-  tenant_id    = azurerm_databricks_workspace.this.storage_account_identity.0.tenant_id
-  object_id    = azurerm_databricks_workspace.this.storage_account_identity.0.principal_id
+  tenant_id    = azurerm_databricks_workspace.this.identity.0.tenant_id
+  object_id    = azurerm_databricks_workspace.this.identity.0.principal_id
 
   key_permissions = [
     "Get",

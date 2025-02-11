@@ -14,8 +14,8 @@ output "databricks_workspace_name" {
 }
 
 output "databricks_app_object_id" {
-  value       = azurerm_databricks_workspace.this.identity[0].principal_id
-  description = "The Object ID of the Databricks application for key vault access."
+  value       = try(azurerm_databricks_workspace.this.identity.0.principal_id, null)
+  description = "The Object ID of the Databricks managed identity."
 }
 
 output "metastore_id" {
