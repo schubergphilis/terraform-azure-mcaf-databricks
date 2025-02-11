@@ -49,7 +49,7 @@ resource "azurerm_key_vault_access_policy" "databricks" {
     "UnwrapKey",
     "WrapKey",
   ]
-}
+} 
 
 resource "azurerm_key_vault_access_policy" "managed" {
   key_vault_id = var.key_vault_id

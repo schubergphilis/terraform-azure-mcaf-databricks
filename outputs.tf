@@ -22,3 +22,11 @@ output "key_vault_access_policy_managed_id" {
   description = "The ID of the Key Vault access policy for managed identity"
   value       = azurerm_key_vault_access_policy.managed.id
 }
+
+output "databricks_app_object_id" {
+  value = azurerm_databricks_workspace.this.identity[0].principal_id
+}
+
+output "metastore_id" {
+  value = databricks_metastore_assignment.this.metastore_id
+}
