@@ -15,12 +15,10 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_msi         = true
+
   subscription_id = var.subscription_id
 }
 
 provider "databricks" {
-  alias     = "workspace"
-  host      = var.databricks_host
-  auth_type = "azure-cli"
+  host = module.databricks.databricks_workspace_url
 }

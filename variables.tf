@@ -23,12 +23,6 @@ variable "databricks_sku" {
   type        = string
 }
 
-variable "enable_private_link" {
-  description = "Whether to enable private link for Databricks."
-  type        = bool
-  default     = false
-}
-
 variable "vnet_id" {
   description = "The ID of the Virtual Network where Databricks will be deployed."
   type        = string
@@ -83,12 +77,6 @@ variable "tenant_id" {
 variable "subscription_id" {
   description = "The Azure subscription ID."
   type        = string
-}
-
-variable "databricks_host" {
-  description = "The Databricks workspace host URL."
-  type        = string
-  default     = ""
 }
 
 variable "metastore_id" {

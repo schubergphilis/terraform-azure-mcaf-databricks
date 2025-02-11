@@ -19,6 +19,6 @@ output "metastore_id" {
 }
 
 output "databricks_app_object_id" {
-  description = "The Object ID of the Databricks application"
-  value       = azurerm_databricks_workspace.this.managed_resource_group_id
+  description = "The Object ID of the Databricks Managed Identity."
+  value       = azurerm_databricks_workspace.this.identity[0].principal_id
 }
