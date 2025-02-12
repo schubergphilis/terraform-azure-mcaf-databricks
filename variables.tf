@@ -123,6 +123,7 @@ variable "databricks_host" {
   default     = "" # Default to empty to avoid breaking execution
 }
 
+# Variables for Databricks Managed Identity
 variable "databricks_mid_name" {
   description = "The name of the user-assigned managed identity for Databricks."
   type        = string

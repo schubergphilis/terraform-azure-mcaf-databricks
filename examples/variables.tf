@@ -130,7 +130,6 @@ variable "databricks_host" {
 }
 
 # IAM
-
 variable "databricks_mid_name" {
   description = "The name of the Databricks Managed Identity."
   type        = string

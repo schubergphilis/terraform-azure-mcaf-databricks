@@ -71,32 +71,60 @@ module "keyvault" {
   }
 }
 
+# **Create Databricks Managed Identity**
+resource "azurerm_user_assigned_identity" "databricks_mid" {
+  name                = var.databricks_mid_name
+  resource_group_name = var.databricks_mid_resource_group
+  location            = var.location
+}
+
+# **Assign Key Vault Role to Databricks Managed Identity**
+resource "azurerm_role_assignment" "databricks_mid_kv" {
+  scope                = module.keyvault.key_vault_id
+  role_definition_name = "Key Vault Crypto User"
+  principal_id         = azurerm_user_assigned_identity.databricks_mid.principal_id
+}
+
+# **Grant Key Vault Access Policy for Databricks Managed Identity**
+resource "azurerm_key_vault_access_policy" "databricks_mid" {
+  key_vault_id = module.keyvault.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = azurerm_user_assigned_identity.databricks_mid.principal_id
+
+  key_permissions = [
+    "Get",
+    "UnwrapKey",
+    "WrapKey",
+  ]
+}
+
 module "databricks" {
   source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-databricks.git?ref=develop"
 
-  prefix                    = var.prefix
-  databricks_workspace_name = var.databricks_workspace_name
-  databricks_sku            = var.databricks_sku
-  vnet_id                   = module.network.id
-  private_subnet_id         = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "private-subnet", null)
-  public_subnet_id          = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "public-subnet", null)
-  private_subnet_name       = "private-subnet"
-  public_subnet_name        = "public-subnet"
-  private_subnet_nsg_id     = module.databricks.private_subnet_nsg_id
-  public_subnet_nsg_id      = module.databricks.public_subnet_nsg_id
-  resource_group_name       = var.resource_group_name
-  location                  = var.location
-  key_vault_id              = module.keyvault.key_vault_id
-  managed_disk_key_id       = module.keyvault.cmkrsa_id
-  managed_services_key_id   = module.keyvault.cmkrsa_resource_versionless_id
-  managed_identity_id       = azurerm_user_assigned_identity.databricks_mid.id
-  tenant_id                 = var.tenant_id
-  subscription_id           = var.subscription_id
-  metastore_id              = var.metastore_id
-  tags                      = var.tags
+  prefix                        = var.prefix
+  databricks_workspace_name     = var.databricks_workspace_name
+  databricks_sku                = var.databricks_sku
+  vnet_id                       = module.network.id
+  private_subnet_id             = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "private-subnet", null)
+  public_subnet_id              = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "public-subnet", null)
+  private_subnet_name           = "private-subnet"
+  public_subnet_name            = "public-subnet"
+  private_subnet_nsg_id         = module.databricks.private_subnet_nsg_id
+  public_subnet_nsg_id          = module.databricks.public_subnet_nsg_id
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  key_vault_id                  = module.keyvault.key_vault_id
+  managed_disk_key_id           = module.keyvault.cmkrsa_id
+  managed_services_key_id       = module.keyvault.cmkrsa_resource_versionless_id
+  managed_identity_id           = azurerm_user_assigned_identity.databricks_mid.id
+  tenant_id                     = var.tenant_id
+  subscription_id               = var.subscription_id
+  metastore_id                  = var.metastore_id
+  tags                          = var.tags
+  databricks_mid_resource_group = var.databricks_mid_resource_group
 }
 
-# Fetch Databricks Workspace details dynamically
+# **Ensure Databricks Workspace is Created Before Fetching Data**
 data "azurerm_databricks_workspace" "this" {
   name                = module.databricks.databricks_workspace_name
   resource_group_name = var.resource_group_name

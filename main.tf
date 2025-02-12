@@ -12,30 +12,6 @@ resource "azurerm_network_security_group" "private" {
   )
 }
 
-resource "azurerm_user_assigned_identity" "databricks_mid" {
-  name                = var.databricks_mid_name
-  resource_group_name = var.databricks_mid_resource_group
-  location            = var.location
-}
-
-resource "azurerm_role_assignment" "databricks_mid_kv" {
-  scope                = module.keyvault.key_vault_id
-  role_definition_name = "Key Vault Crypto User"
-  principal_id         = azurerm_user_assigned_identity.databricks_mid.principal_id
-}
-
-resource "azurerm_key_vault_access_policy" "databricks_mid" {
-  key_vault_id = module.keyvault.key_vault_id
-  tenant_id    = var.tenant_id
-  object_id    = azurerm_user_assigned_identity.databricks_mid.principal_id
-
-  key_permissions = [
-    "Get",
-    "UnwrapKey",
-    "WrapKey",
-  ]
-}
-
 resource "azurerm_network_security_group" "public" {
   name                = "${var.prefix}-public-subnet-nsg"
   location            = var.location
@@ -58,6 +34,33 @@ resource "azurerm_subnet_network_security_group_association" "private" {
 resource "azurerm_subnet_network_security_group_association" "public" {
   subnet_id                 = var.public_subnet_id
   network_security_group_id = azurerm_network_security_group.public.id
+}
+
+# Create Managed Identity for Databricks
+resource "azurerm_user_assigned_identity" "databricks_mid" {
+  name                = var.databricks_mid_name
+  resource_group_name = var.databricks_mid_resource_group
+  location            = var.location
+}
+
+# Assign Key Vault Crypto User role to Databricks Managed Identity
+resource "azurerm_role_assignment" "databricks_mid_kv" {
+  scope                = var.key_vault_id
+  role_definition_name = "Key Vault Crypto User"
+  principal_id         = azurerm_user_assigned_identity.databricks_mid.principal_id
+}
+
+# Key Vault Access Policy for Databricks Managed Identity
+resource "azurerm_key_vault_access_policy" "databricks_mid" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = azurerm_user_assigned_identity.databricks_mid.principal_id
+
+  key_permissions = [
+    "Get",
+    "UnwrapKey",
+    "WrapKey",
+  ]
 }
 
 # Databricks Workspace
@@ -94,6 +97,7 @@ resource "azurerm_databricks_workspace" "this" {
   }
 }
 
+# Outputs for NSG IDs
 output "private_subnet_nsg_id" {
   value       = azurerm_network_security_group.private.id
   description = "The ID of the Network Security Group (NSG) associated with the private subnet."
@@ -102,4 +106,15 @@ output "private_subnet_nsg_id" {
 output "public_subnet_nsg_id" {
   value       = azurerm_network_security_group.public.id
   description = "The ID of the Network Security Group (NSG) associated with the public subnet."
+}
+
+# Output for Databricks Managed Identity
+output "databricks_managed_identity_id" {
+  value       = azurerm_user_assigned_identity.databricks_mid.id
+  description = "The ID of the user-assigned managed identity for Databricks."
+}
+
+output "databricks_managed_identity_principal_id" {
+  value       = azurerm_user_assigned_identity.databricks_mid.principal_id
+  description = "The principal ID of the user-assigned managed identity for Databricks."
 }
