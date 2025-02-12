@@ -4,7 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.0, < 4.0" # Force rollback to 3.x
+      version = ">= 3.0, < 4.0"
     }
     databricks = {
       source  = "databricks/databricks"
