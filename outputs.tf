@@ -17,8 +17,3 @@ output "metastore_id" {
   value       = var.metastore_id
   description = "The metastore ID assigned to the Databricks workspace."
 }
-
-output "databricks_app_object_id" {
-  description = "The Object ID of the Databricks Managed Identity."
-  value       = azurerm_databricks_workspace.this.identity[0].principal_id
-}

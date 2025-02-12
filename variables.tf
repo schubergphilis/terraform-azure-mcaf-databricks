@@ -91,13 +91,8 @@ variable "tags" {
   default     = {}
 }
 
-variable "subscription_id" {
-  description = "The Azure subscription ID."
-  type        = string
-}
-
 variable "databricks_host" {
   description = "The Databricks workspace host URL."
   type        = string
-  default     = ""  # Default to empty to avoid breaking execution
+  default     = "" # Default to empty to avoid breaking execution
 }
