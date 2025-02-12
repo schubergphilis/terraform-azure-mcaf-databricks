@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "this" {
 }
 
 module "network" {
-  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-network.git?ref=main"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-network.git"
 
   resource_group = {
     name     = var.resource_group_name
@@ -18,7 +18,7 @@ module "network" {
 }
 
 module "storage_account" {
-  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-storage-account.git?ref=main"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-storage-account.git"
 
   name                     = var.storage_account_name
   resource_group_name      = module.network.resource_group.name # 👈 Dynamically fetch resource group
@@ -48,7 +48,7 @@ module "storage_account" {
 }
 
 module "keyvault" {
-  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-core.git?ref=main"
+  source = "git::https://github.com/schubergphilis/terraform-azure-mcaf-core.git"
 
   location = var.location
 
@@ -78,10 +78,10 @@ module "databricks" {
   databricks_workspace_name = var.databricks_workspace_name
   databricks_sku            = var.databricks_sku
   vnet_id                   = module.network.id
+  private_subnet_id         = module.network.subnets["private_subnet"].id
+  public_subnet_id          = module.network.subnets["public_subnet"].id
   private_subnet_name       = module.network.subnets["private_subnet"].name
   public_subnet_name        = module.network.subnets["public_subnet"].name
-  private_subnet_nsg_id     = module.network.all_network_security_groups["private_subnet"].id
-  public_subnet_nsg_id      = module.network.all_network_security_groups["public_subnet"].id
   resource_group_name       = var.resource_group_name
   location                  = var.location
   key_vault_id              = module.keyvault.key_vault_id

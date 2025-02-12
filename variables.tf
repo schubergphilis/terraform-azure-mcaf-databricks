@@ -48,6 +48,32 @@ variable "public_subnet_nsg_id" {
   type        = string
 }
 
+variable "private_subnet_id" {
+  description = "The ID of the private subnet for Databricks."
+  type        = string
+}
+
+variable "public_subnet_id" {
+  description = "The ID of the public subnet for Databricks."
+  type        = string
+}
+
+variable "custom_nsg_rules" {
+  description = "Custom security rules for the NSGs (optional)."
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_address_prefix      = optional(string)
+    source_port_range          = optional(string)
+    destination_address_prefix = optional(string)
+    destination_port_range     = optional(string)
+  }))
+  default = []
+}
+
 variable "key_vault_id" {
   description = "The ID of the Azure Key Vault."
   type        = string

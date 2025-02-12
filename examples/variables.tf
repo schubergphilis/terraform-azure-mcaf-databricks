@@ -27,10 +27,26 @@ variable "vnet_address_space" {
 variable "subnets" {
   description = "Subnet configuration"
   type = map(object({
-    name                            = string
-    address_prefixes                = list(string)
-    create_network_security_group   = optional(bool, false)
+    name                          = string
+    address_prefixes              = list(string)
+    create_network_security_group = optional(bool, false)
   }))
+}
+
+variable "custom_nsg_rules" {
+  description = "Custom security rules for the NSGs (optional)."
+  type = list(object({
+    name                       = string
+    priority                   = number
+    direction                  = string
+    access                     = string
+    protocol                   = string
+    source_address_prefix      = optional(string)
+    source_port_range          = optional(string)
+    destination_address_prefix = optional(string)
+    destination_port_range     = optional(string)
+  }))
+  default = []
 }
 
 # Storage Account
