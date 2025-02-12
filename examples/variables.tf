@@ -25,11 +25,11 @@ variable "vnet_address_space" {
 }
 
 variable "subnets" {
-  description = "A map of subnet configurations"
+  description = "Subnet configuration"
   type = map(object({
-    name              = string
-    address_prefix    = string
-    service_endpoints = list(string)
+    name                            = string
+    address_prefixes                = list(string)
+    create_network_security_group   = optional(bool, false)
   }))
 }
 
