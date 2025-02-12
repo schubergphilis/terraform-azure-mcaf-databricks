@@ -66,6 +66,12 @@ variable "keyvault_sku" {
   description = "The SKU of the Key Vault (e.g., standard, premium)."
 }
 
+variable "cmk_key_vault_id" {
+  description = "Key Vault ID for Customer Managed Key encryption"
+  type        = string
+  default     = null
+}
+
 variable "keyvault_access_policies" {
   type = list(object({
     tenant_id               = string
@@ -121,4 +127,17 @@ variable "databricks_host" {
   description = "The Databricks workspace host URL."
   type        = string
   default     = "" # Default to empty to avoid breaking execution
+}
+
+# IAM
+
+variable "databricks_mid_name" {
+  description = "The name of the Databricks Managed Identity."
+  type        = string
+  default     = "databricks-mid"
+}
+
+variable "databricks_mid_resource_group" {
+  description = "The resource group where Databricks Managed Identity is created."
+  type        = string
 }

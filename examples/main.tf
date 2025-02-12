@@ -39,8 +39,8 @@ module "storage_account" {
     allow_nested_items_to_be_public = false
     default_action                  = "Deny"
     virtual_network_subnet_ids = [
-      module.network.subnets["private_subnet"].id,
-      module.network.subnets["public_subnet"].id
+      lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "private-subnet", null),
+      lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "public-subnet", null)
     ]
     ip_rules = []
     bypass   = ["AzureServices"]
@@ -78,16 +78,18 @@ module "databricks" {
   databricks_workspace_name = var.databricks_workspace_name
   databricks_sku            = var.databricks_sku
   vnet_id                   = module.network.id
-  private_subnet_id         = module.network.subnets["private_subnet"].id
-  public_subnet_id          = module.network.subnets["public_subnet"].id
-  private_subnet_name       = module.network.subnets["private_subnet"].name
-  public_subnet_name        = module.network.subnets["public_subnet"].name
+  private_subnet_id         = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "private-subnet", null)
+  public_subnet_id          = lookup({ for subnet in module.network.all_subnets : subnet.name => subnet.id }, "public-subnet", null)
+  private_subnet_name       = "private-subnet"
+  public_subnet_name        = "public-subnet"
+  private_subnet_nsg_id     = module.databricks.private_subnet_nsg_id
+  public_subnet_nsg_id      = module.databricks.public_subnet_nsg_id
   resource_group_name       = var.resource_group_name
   location                  = var.location
   key_vault_id              = module.keyvault.key_vault_id
   managed_disk_key_id       = module.keyvault.cmkrsa_id
   managed_services_key_id   = module.keyvault.cmkrsa_resource_versionless_id
-  managed_identity_id       = var.managed_identity_id
+  managed_identity_id       = azurerm_user_assigned_identity.databricks_mid.id
   tenant_id                 = var.tenant_id
   subscription_id           = var.subscription_id
   metastore_id              = var.metastore_id
@@ -98,6 +100,8 @@ module "databricks" {
 data "azurerm_databricks_workspace" "this" {
   name                = module.databricks.databricks_workspace_name
   resource_group_name = var.resource_group_name
+
+  depends_on = [module.databricks] # Ensure it runs only after Databricks is created
 }
 
 output "databricks_workspace_url" {

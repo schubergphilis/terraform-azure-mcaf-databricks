@@ -122,3 +122,14 @@ variable "databricks_host" {
   type        = string
   default     = "" # Default to empty to avoid breaking execution
 }
+
+variable "databricks_mid_name" {
+  description = "The name of the user-assigned managed identity for Databricks."
+  type        = string
+  default     = "databricks-mid"
+}
+
+variable "databricks_mid_resource_group" {
+  description = "The resource group for the Databricks user-assigned managed identity."
+  type        = string
+}
