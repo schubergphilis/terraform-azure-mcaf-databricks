@@ -100,3 +100,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "databricks_host" {
+  description = "The Databricks workspace host URL."
+  type        = string
+  default     = "" # Default to empty to avoid breaking execution
+}
